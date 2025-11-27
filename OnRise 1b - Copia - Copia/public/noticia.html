@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notícia</title>
+   <style>
+    body {
+        background-color: #062330;
+        margin: 0;
+        padding: 0;
+        font-family: Arial, sans-serif;
+        color: #ffffff;
+    }
+
+    .conteudo-noticia {
+        max-width: 900px;
+        margin: 48px auto;
+        background: #001d29;
+        padding: 32px;
+        border-radius: 14px;
+        box-shadow: 0 4px 18px rgba(0,0,0,0.6);
+    }
+
+    .voltar {
+        color: #00ffc8;
+        text-decoration: none;
+        font-weight: bold;
+        display: inline-block;
+        margin-bottom: 18px;
+        font-size: 15px;
+    }
+
+    h1 {
+        margin-top: 0;
+        color: #ffffff;
+        font-size: 28px;
+    }
+
+    #meta {
+        color: #d8d8d8;
+        margin-bottom: 20px;
+        font-size: 14px;
+    }
+
+    #imagem {
+        width: 100%;
+        height: auto;
+        border-radius: 12px;
+        margin-bottom: 22px;
+    }
+
+    #conteudo {
+        font-size: 17px;
+        line-height: 1.7;
+        color: #ffffff;
+    }
+
+    #acoes {
+        margin-top: 28px;
+        display: flex;
+        gap: 12px;
+    }
+
+    #acoes button {
+        padding: 12px 18px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: bold;
+        font-size: 15px;
+        transition: 0.3s;
+    }
+
+    #acoes button:first-child {
+        background: #00ffc8;
+        color: #001d29;
+    }
+
+    #acoes button:first-child:hover {
+        opacity: 0.8;
+    }
+
+    #acoes button:last-child {
+        background: #ff008c;
+        color: white;
+    }
+
+    #acoes button:last-child:hover {
+        opacity: 0.8;
+    }
+</style>
+
+</head>
+<body>
+
+<main class="conteudo-noticia fade-up">
+    
+    <a href="index.html" class="voltar">← Voltar às notícias</a>
+
+    <h1 id="titulo">Carregando...</h1>
+    <p id="meta"></p>
+
+    <img id="imagem" src="" alt="" style="display:none" />
+
+    <div id="conteudo"></div>
+
+    <div id="acoes" style="display:none;">
+        <button onclick="editarNoticia()">Editar</button>
+        <button onclick="excluirNoticia()">Excluir</button>
+    </div>
+
+</main>
+<script>
+const params = new URLSearchParams(window.location.search);
+const id = params.get("id");
+
+const ENDPOINTS = [
+    `http://localhost:3000/noticiasNovas/${id}`,
+    `http://localhost:3000/noticiasDestaques/${id}` // Adiciona o endpoint dos Destaques
+];
+
+async function carregarNoticia() {
+    for (const url of ENDPOINTS) {
+        try {
+            const res = await fetch(url);
+            
+            // Verifica se a resposta foi bem-sucedida e se o ID existe
+            if (res.ok && res.status !== 404) {
+                const noticia = await res.json();
+                
+                // Confirma que o objeto retornado não é nulo/vazio
+                if (noticia && noticia.id) { 
+                    mostrarNoticia(noticia);
+                    return; // Sai da função assim que a notícia for encontrada
+                }
+            }
+        } catch (error) {
+            console.error(`Erro ao tentar buscar em ${url}:`, error);
+            // Continua para o próximo endpoint
+        }
+    }
+
+    // Se o loop terminar sem encontrar a notícia
+    document.getElementById("titulo").innerHTML = "Notícia não encontrada ou Erro de Conexão.";
+}
+
+// Chama a função principal
+carregarNoticia();
+
+function mostrarNoticia(noticia) {
+    document.getElementById("titulo").innerHTML = noticia.titulo;
+    
+    document.getElementById("meta").innerHTML = noticia.categoria || ""; 
+
+    if (noticia.imagem) {
+        document.getElementById("imagem").src = noticia.imagem;
+        document.getElementById("imagem").style.display = "block";
+    }
+
+    document.getElementById("conteudo").innerHTML =
+        noticia.conteudo || "<p><i>Essa notícia não possui conteúdo detalhado.</i></p>";
+    document.getElementById("acoes").style.display = "block";
+}
+
+function editarNoticia() {
+    window.location.href = `editar.html?id=${id}`;
+}
+
+function excluirNoticia() {
+    if (!confirm("Deseja realmente excluir esta notícia?")) return;
+
+
+    fetch(`http://localhost:3000/noticiasNovas/${id}`, {
+        method: "DELETE"
+    })
+    .then(() => {
+        alert("Notícia excluída com sucesso! (Se estava na lista de Notícias Novas)");
+        window.location.href = "index.html";
+    })
+    .catch(() => {
+        alert("Erro ao excluir notícia. Verifique se ela está na lista correta.");
+    });
+}
+</script>
+</body>
+</html>

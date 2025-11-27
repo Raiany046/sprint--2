@@ -1,0 +1,233 @@
+<!doctype html>
+
+<html lang="pt-BR">
+
+<head>
+
+  <meta charset="utf-8" />
+
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+
+  <title>ONRISE — Notícias</title>
+
+  <link rel="stylesheet" href="style.css" />
+
+</head>
+
+<body>
+
+  <header class="site-header">
+
+    <div class="brand">ONRISE</div>
+
+
+
+    <nav class="main-nav" aria-label="editoriais">
+
+      <button class="editorial-btn active" data-category="all">Todos</button>
+
+      <button class="editorial-btn" data-category="economia">Economia</button>
+
+      <button class="editorial-btn" data-category="criptomoeda">Criptomoeda</button>
+
+      <button class="editorial-btn" data-category="startups">Startups</button>
+
+      <button class="editorial-btn" data-category="tecnologia">Tecnologia</button>
+
+      <button class="editorial-btn" data-category="esportes">Esportes</button>
+
+      <button class="editorial-btn" data-category="opiniao">Opinião</button>
+
+    </nav>
+
+
+
+    <div class="header-right">
+
+      <a href="cadastronoticia.html" class="btn-cadastrar">Cadastrar Notícia</a>
+
+
+
+      <div class="pills">
+
+        <div class="pill trilha">TRILHA</div>
+
+        <div class="pill missoes">MISSÕES</div>
+
+        <div class="pill noticias">NOTÍCIAS</div>
+
+        <div class="pill ajustes">AJUSTES</div>
+
+      </div>
+
+
+
+      <div class="search">
+
+        <input id="searchInput" placeholder="BUSCAR" aria-label="buscar" />
+
+      </div>
+
+    </div>
+
+  </header>
+
+
+
+  <main class="container">
+
+    <section class="left-col">
+
+     
+
+      <a href="noticia.html?id=1" class="card big-card fade-up" data-category="economia">
+
+        <img src="imgs/economia.png" alt="foto da notícia" style="width:100%; border-radius:10px;">
+
+        <div class="content">
+
+          <div class="eyebrow">ECONOMIA</div>
+
+          <h2>‘Legado das eleições 2026 será horrível, todos perderemos’, diz economista da ARX</h2>
+
+          <p class="card-meta">Publicado em 14/10/2025 • HÁ 2 HORAS</p>
+
+        </div>
+
+      </a>
+
+
+
+     
+
+     
+
+      <div id="lista-noticias"></div>
+
+      </section>
+
+     
+
+   
+
+<div class="right-top">
+
+  <aside class="right-col fade-up" data-category="all">
+
+    <h3>Destaques</h3>
+
+    <div id="lista-destaques" class="destaques-list">
+
+      </div>
+
+  </aside>
+
+</div>
+
+
+
+  <footer class="footer">
+
+    <p>© 2025 ONRISE — Todos os direitos reservados.</p>
+
+  </footer>
+
+
+
+<script src="script.js" defer></script>
+
+ 
+
+<script>
+
+fetch("http://localhost:3000/noticiasNovas")
+
+  .then(res => res.json())
+
+  .then(lista => {
+
+    const container = document.getElementById("lista-noticias");
+
+    container.innerHTML = "";
+
+
+
+    lista.forEach((noticia) => {
+
+      const card = document.createElement("a");
+
+      card.href = `noticia.html?id=${noticia.id}`;
+
+      card.classList.add("noticia-card");
+
+
+
+      card.innerHTML = `
+
+        <img src="${noticia.imagem || 'https://via.placeholder.com/200x400'}" alt="Imagem da notícia" style="width: 25%; height: 100px; border-radius: 10px; object-fit: cover;">
+
+        <h2>${noticia.titulo}</h2>
+
+        <p><strong>Categoria:</strong> ${noticia.categoria}</p>
+
+        <p>${noticia.conteudo ? noticia.conteudo.substring(0,120) + "..." : "Sem conteúdo disponível."}</p>
+
+
+
+        <button onclick="editarNoticia(${noticia.id})" class="btn-editar">Editar</button>
+
+        <button onclick="excluirNoticia(${noticia.id})" class="btn-excluir">Excluir</button>
+
+      `;
+
+
+
+      container.appendChild(card);
+
+    });
+
+  })
+
+  .catch(err => console.error("Erro ao carregar notícias:", err));
+
+
+
+
+
+// -------- FUNÇÃO PARA EXCLUIR --------
+
+function excluirNoticia(id) {
+
+  fetch(`http://localhost:3000/noticiasNovas/${id}`, {
+
+    method: "DELETE"
+
+  })
+
+  .then(() => location.reload())
+
+  .catch(err => console.error("Erro ao excluir:", err));
+
+}
+
+
+
+
+
+// -------- FUNÇÃO PARA EDITAR --------
+
+function editarNoticia(id) {
+
+  window.location.href = `editar.html?id=${id}`;
+
+}
+
+</script>
+
+
+
+
+
+</body>
+
+</html>
