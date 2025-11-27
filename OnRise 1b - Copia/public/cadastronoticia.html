@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Cadastro de Notícias — ONRISE</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+ main {
+      max-width: 700px;
+      margin: 50px auto;
+      background: #f9f9f9;
+      border-radius: 12px;
+      padding: 30px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    label {
+      font-weight: bold;
+      color: #333;
+    }
+
+    input, select, textarea {
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 1rem;
+    }
+
+    button {
+      padding: 12px;
+      background-color: #222;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background-color: #444;
+    }
+  </style>
+</head>
+
+<body>
+  <header class="site-header">
+    <div class="brand">ONRISE</div>
+
+    <nav class="main-nav">
+      <a href="index.html" class="editorial-btn">Voltar para o site</a>
+    </nav>
+  </header>
+
+  <main>
+    <h1 style="text-align:center;color: #222;">Cadastrar Nova Notícia</h1>
+    <p style="text-align:center;color:#501313;margin-bottom:25px;">
+      Preencha os campos abaixo para adicionar uma nova notícia ao site ONRISE.
+    </p>
+
+    <form id="formNoticia">
+      <label for="titulo">Título:</label>
+      <input type="text" id="titulo" placeholder="Digite o título da notícia" required />
+
+      <label for="categoria">Categoria:</label>
+      <select id="categoria" required>
+        <option value="">Selecione...</option>
+        <option value="economia">Economia</option>
+        <option value="criptomoeda">Criptomoeda</option>
+        <option value="startups">Startups</option>
+        <option value="tecnologia">Tecnologia</option>
+        <option value="esportes">Esportes</option>
+        <option value="opiniao">Opinião</option>
+      </select>
+     <label for="publicado">Publicado em:</label>
+     <input type="date" id="publicado" required />
+
+      <label for="imagem">Imagem (URL):</label>
+      <input type="url" id="imagem" placeholder="Ex: https://site.com/imagem.jpg" />
+
+      <label for="conteudo">Conteúdo da Notícia:</label>
+      <textarea id="conteudo" rows="6" placeholder="Digite o texto da notícia..." required></textarea>
+
+      <button type="submit">Cadastrar Notícia</button> 
+      </form>
+  </main>
+
+
+  <footer class="footer">
+
+    <p>© 2025 ONRISE — Todos os direitos reservados.</p>
+  </footer>
+
+  
+    <script>
+  const form = document.getElementById("formNoticia");
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const noticia = {
+  titulo: document.getElementById("titulo").value,
+  categoria: document.getElementById("categoria").value,
+  publicado: formatarData(document.getElementById("publicado").value),
+  imagem: document.getElementById("imagem").value,
+  conteudo: document.getElementById("conteudo").value,
+  tempo: "AGORA" // você pode alterar se quiser
+};
+
+    function formatarData(dataISO) {
+  if (!dataISO) return "";
+  const partes = dataISO.split("-");
+  return `${partes[2]}/${partes[1]}/${partes[0]}`;
+}
+
+
+    try {
+      const resposta = await fetch("http://localhost:3000/noticiasNovas", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(noticia)
+      });
+
+      if (!resposta.ok) {
+        throw new Error("Erro ao salvar a notícia.");
+      }
+
+      alert("📰 Notícia cadastrada com sucesso!");
+      form.reset();
+    } catch (erro) {
+      alert("❌ Erro ao cadastrar notícia.");
+      console.error(erro);
+    }
+  });
+</script>
+</body>
+</html>

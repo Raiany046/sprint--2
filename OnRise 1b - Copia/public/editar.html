@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Editar noticias — ONRISE</title>
+  <link rel="stylesheet" href="style.css" />
+ 
+<style>
+
+    body {
+        background-color: #001d29;
+        font-family: Arial, sans-serif;
+        color: #000000;
+        margin: 0;
+        padding: 0;
+
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        min-height: 100vh;
+    }
+
+    .container {
+        width: 100%;
+        max-width: 700px;  
+        background: #f9f9f9;
+        border-radius: 12px;
+        padding: 30px;
+        margin-top: 40px;
+
+        box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+
+        display: flex;
+        flex-direction: column;
+    }
+
+    a {
+        color: #000000;
+        text-decoration: none;
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+
+    h1 {
+        text-align: center;
+        color: #000000;
+        margin-bottom: 20px;
+        font-size: 1.6rem;
+    }
+
+    label {
+        font-weight: bold;
+        color: #000000;
+        margin-top: 10px;
+        margin-bottom: 8px;
+        display: block;
+    }
+
+    input, textarea {
+        width: 100%;
+        padding: 12px;
+        background: #fffcfc;
+        border: 1px solid #4b5352;
+        color: #000000;
+        border-radius: 10px;
+        font-size: 1rem;
+        outline: none;
+    }
+
+    
+    textarea {
+        resize: vertical; 
+    }
+
+    button {
+        margin-top: 22px;
+        width: 100%;
+        padding: 14px;
+        background-color: #000000;
+        color: #ffffff;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 1rem;
+        font-weight: bold;
+        transition: 0.3s;
+    }
+
+    button:hover {
+        opacity: 0.8;
+    }
+
+</style>
+
+
+</head>
+
+<body>
+
+<div class="container">
+    <a href="index.html">← Voltar</a>
+    <h1 >Editar Notícia</h1>
+
+    <form id="form-editar">
+        <label>Título:</label>
+        <input type="text" id="titulo">
+
+        <label>Categoria:</label>
+        <input type="text" id="categoria">
+
+        <label>Publicado em:</label>
+        <input type="text" id="publicado">
+
+        <label>Tempo:</label>
+        <input type="text" id="tempo">
+
+        <label>URL da imagem:</label>
+        <input type="text" id="imagem">
+
+        <label>Conteúdo:</label>
+        <textarea id="conteudo" rows="7"></textarea>
+
+        <button type="button" onclick="salvar()">Salvar Alterações</button>
+    </form>
+</div>
+
+<script>
+
+const params = new URLSearchParams(window.location.search);
+const id = params.get("id");
+
+
+fetch(`http://localhost:3000/noticiasNovas/${id}`)
+    .then(res => res.json())
+    .then(noticia => preencherFormulario(noticia))
+    .catch(() => alert("Erro ao carregar notícia."));
+
+function preencherFormulario(noticia) {
+    document.getElementById("titulo").value = noticia.titulo || "";
+    document.getElementById("categoria").value = noticia.categoria || "";
+    document.getElementById("publicado").value = noticia.publicado || "";
+    document.getElementById("tempo").value = noticia.tempo || "";
+    document.getElementById("imagem").value = noticia.imagem || "";
+    document.getElementById("conteudo").value = noticia.conteudo || "";
+}
+
+
+function salvar() {
+    const dadosAtualizados = {
+        titulo: document.getElementById("titulo").value,
+        categoria: document.getElementById("categoria").value,
+        publicado: document.getElementById("publicado").value,
+        tempo: document.getElementById("tempo").value,
+        imagem: document.getElementById("imagem").value,
+        conteudo: document.getElementById("conteudo").value
+    };
+
+    fetch(`http://localhost:3000/noticiasNovas/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(dadosAtualizados)
+    })
+    .then(() => {
+        alert("Notícia atualizada com sucesso!");
+        window.location.href = `noticia.html?id=${id}`;
+    })
+    .catch(() => alert("Erro ao salvar alterações."));
+}
+</script>
+
+</body>
+</html>
